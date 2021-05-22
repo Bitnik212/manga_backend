@@ -1,2 +1,3 @@
 #!/bin/bash
-source ../venv/bin/activate
+echo "Запустите эту команду:"
+echo "source ../../venv/bin/activate"
