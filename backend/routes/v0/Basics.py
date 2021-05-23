@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.Http.Helpers import ResponceBuilder
+from app.Http.Helpers import ResponseBuilder
 
 router = APIRouter()
 
-router.get("/health")
+@router.get("/health")
 async def health():
-    return ResponceBuilder().success()
+    return ResponseBuilder().success()
+
 

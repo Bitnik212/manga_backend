@@ -6,3 +6,4 @@ class APIV0:
     def __init__(self):
         self.about = About.router
         self.basics = Basics.router
+

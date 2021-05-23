@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi.exceptions import HTTPException
 
-from app.Exceptions import ResponceException
+from app.Exceptions import ResponseException
 
 class APIConfig:
 
@@ -20,8 +20,9 @@ class APIConfig:
         self.root_path = ""
         self.openapi_prefix = ""
         self.exception_handlers = {
-                404: ResponceException().not_found,
-                501: ResponceException().not_impl
+                422: ResponseException().validation_error, # Не работает (((((
+                404: ResponseException().not_found,
+                501: ResponseException().not_impl,
             }
 
 

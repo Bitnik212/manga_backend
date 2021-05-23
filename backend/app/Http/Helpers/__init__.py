@@ -1,8 +1,9 @@
 from starlette.responses import JSONResponse
 
-class ResponceBuilder:
+class ResponseBuilder:
 
-    def _get_responce_schema(self, data: dict, status: int, info: str = "Все хорошо") -> dict:
+    @staticmethod
+    def _get_response_schema(data: dict, status: int, info: str = "Все хорошо") -> dict:
         """
         Получение шаблона ответа сервера
         :param data:
@@ -28,7 +29,7 @@ class ResponceBuilder:
         :param status: статус
         :return: JSONResponse
         """
-        data = self._get_responce_schema(data=data, status=status, info=info)
+        data = self._get_response_schema(data=data, status=status, info=info)
         return JSONResponse(status_code=status, content=data)
 
     def success(self, info: str = "Все хорошо") -> JSONResponse:
@@ -38,7 +39,7 @@ class ResponceBuilder:
         :return: JSONResponse
         """
         status = 200
-        data = self._get_responce_schema(data={}, status=status, info=info)
+        data = self._get_response_schema(data={}, status=status, info=info)
         return JSONResponse(status_code=status, content=data)
 
     def server_error(self, info: str = "Внутрняя ошибка сервера") -> JSONResponse:
@@ -48,7 +49,7 @@ class ResponceBuilder:
         :return: JSONResponse
         """
         status = 500
-        data = self._get_responce_schema(data={}, status=status, info=info)
+        data = self._get_response_schema(data={}, status=status, info=info)
         return JSONResponse(status_code=status, content=data)
 
     def not_found(self, info: str = "Не нашел") -> JSONResponse:
@@ -58,7 +59,7 @@ class ResponceBuilder:
         :return: JSONResponse
         """
         status = 404
-        data = self._get_responce_schema(data={}, status=status, info=info)
+        data = self._get_response_schema(data={}, status=status, info=info)
         return JSONResponse(status_code=status, content=data)
 
     def not_impl(self, info: str = "Метод не готов") -> JSONResponse:
@@ -68,6 +69,6 @@ class ResponceBuilder:
         :return: JSONResponse
         """
         status = 501
-        data = self._get_responce_schema(data={}, status=status, info=info)
+        data = self._get_response_schema(data={}, status=status, info=info)
         return JSONResponse(status_code=status, content=data)
 
