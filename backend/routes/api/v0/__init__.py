@@ -1,7 +1,7 @@
-import routes.v0.About
-import routes.v0.Basics
+import routes.api.v0.About
+import routes.api.v0.Basics
 
-class APIV0:
+class APIRoutesV0:
 
     def __init__(self):
         self.about = About.router

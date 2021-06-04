@@ -1,41 +1,62 @@
 from fastapi import FastAPI, Request
-from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 
-from config import APIConfig
-from routes.v0 import APIV0
 from app.Exceptions import ResponseException
+from bootstrap.MainApp import MainApp
+from bootstrap.SubApp import SubApp
+from bootstrap.API import API as APIClass
 
-V0 = APIV0()
-Config = APIConfig()
-app = FastAPI(
-    title=Config.title,
-    version=Config.version,
-    openapi_prefix=Config.openapi_prefix,
-    description=Config.description,
-    debug=Config.debug,
-    servers=Config.servers,
-    root_path=Config.root_path,
-    exception_handlers=Config.exception_handlers
-    # root_path_in_servers=False
+# AppMain = App()
+# ConfigMain = AppMain.config
+# RoutesMain = AppMain.routes
+#
+# V0 = RoutesMain.api.v0
+# app = AppMain.get_instance()
+#
+# AppV0 = App(version=0)
+# ConfigV0 = AppV0.config
+# RoutesV0 = AppV0.routes
+# appv0 = AppV0.get_instance()
+app_class = MainApp()
+app = app_class.get_instance()
+app_routes = app_class.routes
+app_class.config = app_class.config
+
+# print(app_class.config.subclass_name)
+
+api = APIClass()
+api_i = api.get_instance()
+
+
+def add_validation_exception_handler(app: FastAPI):
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(r: Request, e: RequestValidationError):
+        return ResponseException().validation_error(r, e)
+
+
+add_validation_exception_handler(api_i)
+add_validation_exception_handler(app)
+
+
+
+#
+# appv0.include_router(
+#     V0.about,
+# )
+api_i.include_router(
+    api.routes.latest.basics,
 )
 
-# Фикс на обработку валидации
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(r: Request, e: RequestValidationError):
-    return ResponseException().validation_error(r, e)
 
-app.include_router(
-    V0.about,
-    prefix=Config.version_prefix,
-)
-app.include_router(
-    V0.basics,
-    prefix=Config.version_prefix,
-)
+@api_i.get("/")
+def read_root():
+    return {"Hello": "World main"}
 
+
+#
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "World v0"}
 
+app.mount(api.config.mount_path, api_i)
 
