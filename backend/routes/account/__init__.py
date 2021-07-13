@@ -6,5 +6,5 @@ class AccountRoutes(SubAppRoutes):
 
     def __init__(self):
         super().__init__()
-        self.latest = AccountRoutesV0()
-        self.v0 = AccountRoutesV0()
+        self.latest = AccountRoutesV0
+        self.v0 = AccountRoutesV0
