@@ -1,3 +1,5 @@
+import typing
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
@@ -16,6 +18,7 @@ class SubApp:
         self.routes: SubAppRoutes or None = None
         self.versions: list = []
         self.now_version: SubAppVersion or None = None
+        self.__middlewares = [[]]
 
     def _instance(self) -> FastAPI:
         if self.config is None:
@@ -32,13 +35,26 @@ class SubApp:
             root_path=config.root_path,
             exception_handlers=config.exception_handlers
         )
-        self.add_validation_exception_handler(app)
+        # add middlewares
+        if self.__middlewares:
+            for middleware in self.__middlewares:
+                if middleware:
+                    app.add_middleware(middleware_class=middleware[0])
+                    if middleware[1]:
+                        app.add_middleware(middleware_class=middleware[0], options=middleware[1:])
+        self.add_validation_exception_handler(app)  # fix прикола fastapi
+        # add all routes in app
+        if self.routes and self.routes.latest:
+            for router in self.routes.latest:
+                if router:
+                    app.include_router(router.value)
         return app
 
     def get_instance(self) -> FastAPI:
         return self._instance()
 
-    def add_validation_exception_handler(self, app: FastAPI):
+    @staticmethod
+    def add_validation_exception_handler(app: FastAPI):
         @app.exception_handler(RequestValidationError)
         async def validation_exception_handler(r: Request, e: RequestValidationError):
             return ResponseException().validation_error(r, e)
@@ -82,3 +98,5 @@ class SubApp:
         app.mount_path = "/"+self.subclass_name
         return app
 
+    def add_middleware(self, middleware: type, **options: typing.Any):
+        self.__middlewares.append([middleware, options])

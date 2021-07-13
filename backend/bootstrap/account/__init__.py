@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.Http.Middleware.AuthMiddleware import AuthMiddleware
 from bootstrap import SubApp
 from bootstrap.SubAppVersion import SubAppVersion
 from bootstrap.account.versions.Version0 import AccountVersion0
@@ -16,6 +17,7 @@ class AccountApp(SubApp):
         self.routes = now_version.routes
         self.config = now_version.config
         self.debug = now_version.config.debug
+        self.add_middleware(AuthMiddleware)
 
     def _configure(self):
         this = super()._configure()
